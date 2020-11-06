@@ -1,4 +1,4 @@
-#import constants
+import constants
 import statistics
 from itertools import cycle
 
@@ -48,7 +48,7 @@ def inizializzaScript():
             error = True
     
     #controllo se la materia selezionata esiste e se è un intero
-    if (not error and materiaSelezionata >= 1 and materiaSelezionata <= 4):
+    if (not error and materiaSelezionata >= constants.ID_INFORMATICA and materiaSelezionata <= constants.ID_SOCIOLOGIA):
         #ciclo le materie disponibili
         for key,value in list(azioni.items()):
             print("{}) {}".format(key,value))
@@ -68,10 +68,10 @@ def inizializzaScript():
             #setto gli errori
             error = True
 
-        if (not error and azioneSelezionata == 1):
+        if (not error and azioneSelezionata == constants.ID_INSERISCI_VOTO):
             inserisciVoto(materiaSelezionata)
                    
-        elif (not error and azioneSelezionata == 2):
+        elif (not error and azioneSelezionata == constants.ID_VEDI_VOTI):
             vediVoti(materiaSelezionata)
 
         else:
@@ -88,23 +88,23 @@ def inserisciVoto(materiaSelezionata):
     #controllo se il voto selezionato è un intero
     votoInserito = int(votoInserito)
 
-    if (votoInserito > 17 and votoInserito <= 30):
-        if (materiaSelezionata == 1):
+    if (votoInserito >= constants.MIN_VOTO and votoInserito <= constants.MAX_VOTO):
+        if (materiaSelezionata == constants.ID_INFORMATICA):
             votiInformatica.append(votoInserito) 
 
             print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
 
-        elif (materiaSelezionata == 2):
+        elif (materiaSelezionata == constants.ID_ECONOMIA):
             votiEconomia.append(votoInserito) 
 
             print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
 
-        elif (materiaSelezionata == 3):
+        elif (materiaSelezionata == constants.ID_DIRITTO):
             votiDiritto.append(votoInserito)
 
             print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n') 
 
-        elif (materiaSelezionata == 4):
+        elif (materiaSelezionata == constants.ID_SOCIOLOGIA):
             votiSociologia.append(votoInserito)
 
             print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
@@ -113,13 +113,13 @@ def inserisciVoto(materiaSelezionata):
             print('C\'è stato un problema con il sistema, riprovare per piacere\n')
 
     else:
-        print('Il voto inserito deve essere compreso tra 1 e 30!\n')
+        print('Il voto inserito deve essere compreso tra ' + str(constants.MIN_VOTO) + ' e ' + str(constants.MAX_VOTO) + '!\n')
 
 
 #visualizza i voti e la media della materia selezionata
 def vediVoti(materiaSelezionata):
 
-    if (materiaSelezionata == 1):
+    if (materiaSelezionata == constants.ID_INFORMATICA):
         #controllo se ci sono voti inseriti
         if not votiInformatica:
             print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
@@ -131,7 +131,7 @@ def vediVoti(materiaSelezionata):
 
             print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiInformatica))) + '\n')
 
-    elif (materiaSelezionata == 2):
+    elif (materiaSelezionata == constants.ID_ECONOMIA):
         #controllo se ci sono voti inseriti
         if not votiEconomia:
             print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
@@ -143,7 +143,7 @@ def vediVoti(materiaSelezionata):
 
             print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiEconomia))) + '\n')
 
-    elif (materiaSelezionata == 3):
+    elif (materiaSelezionata == constants.ID_DIRITTO):
         #controllo se ci sono voti inseriti
         if not votiDiritto:
             print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
@@ -155,7 +155,7 @@ def vediVoti(materiaSelezionata):
 
             print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiDiritto))) + '\n')
 
-    elif (materiaSelezionata == 4):
+    elif (materiaSelezionata == constants.ID_SOCIOLOGIA):
         #controllo se ci sono voti inseriti
         if not votiSociologia:
             print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
