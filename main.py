@@ -1,174 +1,149 @@
 import constants
+import inserisciVoto
 import statistics
 from itertools import cycle
 
-#dizionario contentente tutte le materie
-materie = {
-            1: 'Informatica', 
-            2: 'Economia', 
-            3: 'Diritto', 
-            4: 'Sociologia'
-        }
-
 #dizionario con le azioni che si possono effettuare
 azioni = {
-            1: 'Inserisci voto',
+            1: 'Inserisci esame',
             2: 'Vedi voti'
         }
 
-#liste contenti i voti delle materie
-votiInformatica = []
-votiEconomia = []
-votiDiritto = []
-votiSociologia = []
+crediti = {3, 6, 9, 12}
 
+#dizionario contenti i voti delle materie
+voti = dict()
 
 def inizializzaScript():
-
     #inizializzo gli errori a false
     error = False
 
-    #ciclo le materie disponibili
-    for key,value in list(materie.items()):
+    #ciclo le aziioni disponibili
+    for key,value in list(azioni.items()):
         print("{}) {}".format(key,value))
 
-    materiaSelezionata = input("Seleziona la materia:\n")
+    #permetto l'input da parte dell'utente
+    azioneSelezionata = input("Seleziona un'opzione: ")
 
-    #controllo se l'azione selezionata è un intero
+    #controllo se l'azione selezionata esiste
     try:
-        #sanitizzo l'intero
-        materiaSelezionata = int(materiaSelezionata)
+        #sanitizzo l'input che può essere sia un intero che una stringa, per questo motivo controllo se è una stringa
+        azioneSelezionata = str(azioneSelezionata).lower()
 
-        if (type(materiaSelezionata) != int):
+        #se non è una stringa imposto il flag error a true
+        if (type(azioneSelezionata) != str):
             #setto gli errori
             error = True
 
     except:
-            #setto gli errori
+            #se non è andato a buon fine il try imposto il flag error a true
             error = True
+
+    #controllo se l'azione inserita esiste (può essere sia l'id dell'azione sia il nome)
+    if (not error and (azioneSelezionata == str(constants.ID_AZIONE_INSERISCI_ESAME) or azioneSelezionata == constants.NAME_AZIONE_INSERISCI_ESAME.lower())):
+        inserisciEsame()
+
+    elif (not error and (azioneSelezionata == str(constants.ID_AZIONE_VEDI_VOTI) or azioneSelezionata == constants.NAME_AZIONE_VEDI_VOTI.lower())):
+        vediVoti()
+
+    else:
+        print("Seleziona una azione valida\n")
+
+
+#permette l'inserimento di un esame
+def inserisciEsame():
+    error = False
+
+    #richiamo il metodo dove inserisco la materia e mi restituisce il nome della materia (l'input dell'utente) e error (true o false)
+    materiaInserita, error = inserisciVoto.inserisciMateria(voti)
+
+    #se ci sono errori stampo un messaggio e blocco l'esecuzione
+    if (error):
+        print("Inserire il nome della materia e verificare che non sia già stata inserita!")
+        return
     
-    #controllo se la materia selezionata esiste e se è un intero
-    if (not error and materiaSelezionata >= constants.ID_INFORMATICA and materiaSelezionata <= constants.ID_SOCIOLOGIA):
-        #ciclo le materie disponibili
-        for key,value in list(azioni.items()):
-            print("{}) {}".format(key,value))
+    #effettuo un while così se il numero di crediti è valido vado avanti, altrimenti richiedo il numero di crediti
+    while True:
+        #richiamo il metodo dove inserisco il numero di crediti e mi restituisce il numero di crediti (l'input dell'utente) e error (true o false)
+        creditiMateria, error = inserisciVoto.inserisciCreditiMateria(materiaInserita, crediti)
+        
+        #se non ci sono errori interrompo il while e vado avanti
+        if (not error):
+            break
 
-        azioneSelezionata = input("Vuoi inserire un voto o vederli?\n")
+        #se ci sono errori stampo un messaggio
+        print('Inserisci un numero di crediti valido!')
 
-        #controllo se l'azione selezionata è un intero
-        try:
-            #sanitizzo l'intero
-            azioneSelezionata = int(azioneSelezionata)
+    #effettuo un while così se la data dell'esame è valida vado avanti, altrimenti richiedo la data
+    while True:
+        #richiamo il metodo dove inserisco la data dell'esame e mi restituisce la data (l'input dell'utente) e error (true o false)
+        dataEsame, error = inserisciVoto.inserisciDataEsame()
 
-            if (type(azioneSelezionata) != int):
-                #setto gli errori
-                error = True
+        #se non ci sono errori interrompo il while e vado avanti
+        if (not error):
+            break
 
-        except:
-            #setto gli errori
-            error = True
+        #se ci sono errori stampo un messaggio
+        print('Inserisci una data valida!')
 
-        if (not error and azioneSelezionata == constants.ID_INSERISCI_VOTO):
-            inserisciVoto(materiaSelezionata)
-                   
-        elif (not error and azioneSelezionata == constants.ID_VEDI_VOTI):
-            vediVoti(materiaSelezionata)
+    #effettuo un while così se il voto dell'esame è valido vado avanti, altrimenti lo richiedo
+    while True:
+        #richiamo il metodo dove inserisco il voto dell'esame e me lo restituisce (l'input dell'utente) e error (true o false)
+        votoMateria, error = inserisciVoto.inserisciVotoEsame(materiaInserita)
 
-        else:
-            print("L'azione che hai selezionato non esiste\n")
+        #se non ci sono errori interrompo il while e vado avanti
+        if (not error):
+            break
 
-    else:
-        print("Seleziona una materia esistente\n")
+        #se ci sono errori stampo un messaggio
+        print('Il voto inserito deve essere compreso tra ' + str(constants.MIN_VOTO) + ' e ' + str(constants.MAX_VOTO) + '!')
+        
 
+    #creo un dizionario con l'esame sostenuto
+    dictEsitoMateria = dict()
+    dictEsitoMateria["crediti"] = creditiMateria
+    dictEsitoMateria["voto"] = votoMateria
+    dictEsitoMateria["data"] = dataEsame
 
-#permette l'inserimento di un voto di una determinata materia
-def inserisciVoto(materiaSelezionata):
-    votoInserito = input('\nInserisci il voto della materia ' + materie[materiaSelezionata].lower() + ':\n')
+    #inserisco al dizionario voti l'esame sostenuto e metto come chiave il nome del corso e poi come un altro dizionario tutti i suoi dati
+    voti[materiaInserita] = dictEsitoMateria
 
-    #controllo se il voto selezionato è un intero
-    votoInserito = int(votoInserito)
-
-    if (votoInserito >= constants.MIN_VOTO and votoInserito <= constants.MAX_VOTO):
-        if (materiaSelezionata == constants.ID_INFORMATICA):
-            votiInformatica.append(votoInserito) 
-
-            print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
-
-        elif (materiaSelezionata == constants.ID_ECONOMIA):
-            votiEconomia.append(votoInserito) 
-
-            print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
-
-        elif (materiaSelezionata == constants.ID_DIRITTO):
-            votiDiritto.append(votoInserito)
-
-            print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n') 
-
-        elif (materiaSelezionata == constants.ID_SOCIOLOGIA):
-            votiSociologia.append(votoInserito)
-
-            print('È stato inserito il voto ' + str(votoInserito) + ' alla materia ' + materie[materiaSelezionata].lower() + '\n')
-
-        else:
-            print('C\'è stato un problema con il sistema, riprovare per piacere\n')
-
-    else:
-        print('Il voto inserito deve essere compreso tra ' + str(constants.MIN_VOTO) + ' e ' + str(constants.MAX_VOTO) + '!\n')
+    print('È stato inserito l\'esame ' + materiaInserita + ' con una valutazione di ' + str(votoMateria))
 
 
 #visualizza i voti e la media della materia selezionata
-def vediVoti(materiaSelezionata):
+def vediVoti():
+    #se non ci sono voti inseriti mostro un errore
+    if (not voti):
+        print('Non ci sono voti inseriri!')
+        return
 
-    if (materiaSelezionata == constants.ID_INFORMATICA):
-        #controllo se ci sono voti inseriti
-        if not votiInformatica:
-            print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
+    #inizializzo delle variabili a 0 utilizzate per calcolare le medie
+    numeratorePonderata = 0
+    denominatorePonderata = 0
+    numeratore = 0
+    denomitare = 0
 
-        else:
-            print('\n')
-            for voto in range(len(votiInformatica)): 
-                print(votiInformatica[voto]), 
+    #ciclo tutti i voti
+    for materia in voti:
+        #stampo il nome della materia, il numero di crediti, la valutazione e la data dell'esame
+        print("Esame: " + str(materia) + " - Crediti: " + str(voti[materia]["crediti"]) + " - Valutazione: " + str(voti[materia]["voto"]) + " - Sostenuto il: " + str(voti[materia]["data"])), 
+        
+        #mi calcolo il numeratore e il denominatore per effetuare la media ponderata
+        numeratorePonderata += (voti[materia]["crediti"] * voti[materia]["voto"])
+        denominatorePonderata += voti[materia]["crediti"]
 
-            print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiInformatica))) + '\n')
+        #aggiungo il voto al numeratore e aggiungo uno al denominatore per calcolare la media aritmetica
+        numeratore += voti[materia]["voto"]
+        denomitare += 1
 
-    elif (materiaSelezionata == constants.ID_ECONOMIA):
-        #controllo se ci sono voti inseriti
-        if not votiEconomia:
-            print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
+    #mi calcolo entrambe le medie
+    mediaPonderata = numeratorePonderata / denominatorePonderata
+    media = numeratore / denomitare
 
-        else:
-            print('\n')
-            for voto in range(len(votiEconomia)): 
-                print(votiEconomia[voto]), 
-
-            print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiEconomia))) + '\n')
-
-    elif (materiaSelezionata == constants.ID_DIRITTO):
-        #controllo se ci sono voti inseriti
-        if not votiDiritto:
-            print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
-
-        else:
-            print('\n')
-            for voto in range(len(votiDiritto)): 
-                print(votiDiritto[voto]), 
-
-            print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiDiritto))) + '\n')
-
-    elif (materiaSelezionata == constants.ID_SOCIOLOGIA):
-        #controllo se ci sono voti inseriti
-        if not votiSociologia:
-            print('La materia ' + materie[materiaSelezionata].lower() + ' non ha voti inseriti\n')
-
-        else:
-            print('\n')
-            for voto in range(len(votiSociologia)): 
-                print(votiSociologia[voto]), 
-
-                print('\nLa tua media della materia di ' + materie[materiaSelezionata].lower() + ' è di ' + str(float(statistics.mean(votiSociologia))) + '\n')
-
-    else:
-        print('C\'è stato un problema durante la visualizzazione dei voti, riprovare per piacere\n')
+    #mi stampo le due medie arrotondandole alla seconda cifra decimanle
+    print('\nLa tua media ponderata è di ' + str(round(mediaPonderata, 2)))
+    print('La tua media artimetica è di ' + str(round(media, 2)))
 
 
 while True:
