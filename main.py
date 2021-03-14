@@ -9,6 +9,7 @@ azioni = {
             2: 'Vedi voti'
         }
 
+#dizionario con i crediti validi
 crediti = {3, 6, 9, 12}
 
 #dizionario contenti i voti delle materie

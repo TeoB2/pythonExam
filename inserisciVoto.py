@@ -57,11 +57,11 @@ def inserisciDataEsame(error = False):
         
         dataEsame = today.strftime("%d-%m-%Y")
 
-    #con uno split prendo il giorno, il mese e l'anno e li metto in 3 variabili
-    day, month, year = dataEsame.split('-')
-
     #verigico se la data è valida
     try:
+        #con uno split prendo il giorno, il mese e l'anno e li metto in 3 variabili
+        day, month, year = dataEsame.split('-')
+
         datetime.datetime(int(year),int(month),int(day))
 
     except ValueError:
