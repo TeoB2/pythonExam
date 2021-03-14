@@ -1,2 +1,2 @@
-__all__ = ["constants"]
+__all__ = ["constants", "inserisciVoto"]
 from package_name import *
